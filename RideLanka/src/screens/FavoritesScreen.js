@@ -8,7 +8,7 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 
 const FavoritesScreen = ({ navigation }) => {
@@ -56,21 +56,21 @@ const FavoritesScreen = ({ navigation }) => {
             </View>
           </View>
           <TouchableOpacity style={styles.removeButton}>
-            <Icon name="favorite" size={20} color={COLORS.primary} />
+            <MaterialIcons name="favorite" size={20} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
         
         <View style={styles.features}>
           <View style={styles.featureTag}>
-            <Icon name="settings" size={14} color={COLORS.gray} />
+            <MaterialIcons name="settings" size={14} color={COLORS.gray} />
             <Text style={styles.featureText}>{item.transmission}</Text>
           </View>
           <View style={styles.featureTag}>
-            <Icon name="local-gas-station" size={14} color={COLORS.gray} />
+            <MaterialIcons name="local-gas-station" size={14} color={COLORS.gray} />
             <Text style={styles.featureText}>{item.fuel}</Text>
           </View>
           <View style={styles.featureTag}>
-            <Icon name="person" size={14} color={COLORS.gray} />
+            <MaterialIcons name="person" size={14} color={COLORS.gray} />
             <Text style={styles.featureText}>{item.seats}</Text>
           </View>
         </View>
@@ -92,20 +92,20 @@ const FavoritesScreen = ({ navigation }) => {
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Icon name="chevron-left" size={20} color={COLORS.black} />
+            <Ionicons name="chevron-back" size={20} color={COLORS.black} />
           </TouchableOpacity>
           <Text style={styles.title}>Favorite vehicles</Text>
           <TouchableOpacity
             style={styles.notificationButton}
             onPress={() => navigation.navigate('Notifications')}
           >
-            <Icon name="notifications" size={20} color={COLORS.white} />
+            <Ionicons name="notifications-outline" size={20} color={COLORS.hero} />
           </TouchableOpacity>
         </View>
 
         {favoriteVehicles.length === 0 ? (
           <View style={styles.emptyState}>
-            <Icon name="favorite-border" size={64} color={COLORS.lightGray} />
+            <MaterialIcons name="favorite-border" size={64} color={COLORS.lightGray} />
             <Text style={styles.emptyTitle}>No favorites yet</Text>
             <Text style={styles.emptyText}>
               Start adding vehicles to your favorites list
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#0F3D3E',
@@ -168,6 +168,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: COLORS.black,
+    textAlign: 'center',
+    flex: 1,
+    marginHorizontal: 12,
   },
   emptyState: {
     flex: 1,
