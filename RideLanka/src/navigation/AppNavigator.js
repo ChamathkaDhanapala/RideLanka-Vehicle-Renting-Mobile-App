@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Import screens
 import SplashScreen from '../screens/SplashScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
@@ -16,6 +17,7 @@ import PostVehicleScreen from '../screens/PostVehicleScreen';
 import FilterScreen from '../screens/FilterScreen';
 import CategoryListingScreen from '../screens/CategoryListingScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+
 const categoryStackScreens = [
   { name: 'CategoryCar', title: 'Cars', category: 'Car' },
   { name: 'CategoryBike', title: 'Bikes', category: 'Bike' },
@@ -48,9 +50,12 @@ const TabNavigator = () => {
 
           return <Icon name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#2563EB',
+        tabBarActiveTintColor: '#0B2C2D',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+        },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -64,11 +69,11 @@ const TabNavigator = () => {
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator 
-        initialRouteName="Splash"
+      <Stack.Navigator
+        initialRouteName="Onboarding" 
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#2563EB',
+            backgroundColor: '#0B2C2D',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -76,16 +81,28 @@ const AppNavigator = () => {
           },
         }}
       >
+        {/* ONBOARDING SCREEN  */}
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{ headerShown: false }}
+        />
+
+        {/* SPLASH SCREEN */}
         <Stack.Screen
           name="Splash"
           component={SplashScreen}
           options={{ headerShown: false }}
         />
+
+        {/* MAIN APP */}
         <Stack.Screen
           name="MainTabs"
           component={TabNavigator}
           options={{ headerShown: false }}
         />
+
+
         <Stack.Screen
           name="VehicleDetails"
           component={VehicleDetailsScreen}
