@@ -31,7 +31,7 @@ const FavoritesScreen = ({ navigation }) => {
       type: 'Scooter',
       price: '500 LKR /hr',
       location: 'Colombo',
-      image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&auto=format&fit=crop',
+      image: 'https://images.unsplash.com/photo-1609630875171-b1321377ee65?q=80&w=380&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       transmission: 'Manual',
       fuel: 'Petrol',
       seats: '2 Seats',
@@ -86,9 +86,21 @@ const FavoritesScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
+        {/* Header with Back Button and Notification Icon */}
         <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Icon name="chevron-left" size={20} color={COLORS.black} />
+          </TouchableOpacity>
           <Text style={styles.title}>Favorite vehicles</Text>
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={() => navigation.navigate('Notifications')}
+          >
+            <Icon name="notifications" size={20} color={COLORS.white} />
+          </TouchableOpacity>
         </View>
 
         {favoriteVehicles.length === 0 ? (
@@ -120,8 +132,37 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     marginBottom: 20,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  notificationButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
   title: {
     fontSize: 28,
