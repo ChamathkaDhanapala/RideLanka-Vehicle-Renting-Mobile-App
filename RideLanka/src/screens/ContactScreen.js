@@ -14,7 +14,7 @@ import { COLORS } from '../constants/colors';
 const DEFAULT_VEHICLE = {
   name: 'BMW X5',
   owner: 'Nihal Senarathne',
-  phone: '+94 76 4533 239',
+  phone: '+94 76 2222 222',
   location: 'Colombo Fort',
   address: 'Colombo Fort, Colombo, Sri Lanka',
   coordinates: {
@@ -43,7 +43,7 @@ const ContactScreen = ({ route }) => {
   const handleOpenMaps = () => {
     const { latitude, longitude } = vehicle.coordinates;
     
-    // Platform-specific map URLs
+  
     const scheme = Platform.select({
       ios: 'http://maps.apple.com/?',
       android: 'geo:',
@@ -56,7 +56,7 @@ const ContactScreen = ({ route }) => {
       // Apple Maps
       Linking.openURL(`http://maps.apple.com/?daddr=${latLng}&dirflg=d`);
     } else {
-      // Android - try Google Maps first, then fallback to generic geo
+      // Android 
       const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latLng}&travelmode=driving`;
       const geoUrl = `geo:${latLng}?q=${latLng}(${encodeURIComponent(label)})`;
       

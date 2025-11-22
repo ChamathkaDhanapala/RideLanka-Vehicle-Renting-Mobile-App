@@ -15,10 +15,10 @@ const ProfileScreen = ({ navigation }) => {
   const userInfo = {
     name: 'David Smith',
     nationality: 'United Kingdom',
-    phone: '+94 76 4533 239',
+    phone: '+94 71 111 1111',
     email: 'David@gmail.com',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80',
-    isOwner: false, // Default is tourist
+    isOwner: false, 
   };
 
   const infoRows = [
@@ -75,7 +75,7 @@ const ProfileScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Become an Owner Section - Only show if user is NOT an owner */}
+        {/* Become an Owner  */}
         {!userInfo.isOwner && (
           <View style={styles.becomeOwnerSection}>
             <Text style={styles.sectionTitle}>Become a Vehicle Owner</Text>
@@ -116,7 +116,7 @@ const ProfileScreen = ({ navigation }) => {
           </View>
         )}
 
-        {/* Owner Dashboard - Only show if user IS an owner */}
+        {/* Owner Dashboard */}
         {userInfo.isOwner && (
           <View style={styles.ownerSection}>
             <Text style={styles.sectionTitle}>Owner Dashboard</Text>
