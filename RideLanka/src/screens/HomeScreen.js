@@ -29,7 +29,7 @@ const popularVehicles = [
     id: '1',
     name: 'BMW X5',
     location: 'Colombo',
-    price: '1000 LKR /hr',
+    price: '1000 LKR /D',
     rating: 4.9,
     status: 'Available',
     image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800',
@@ -43,10 +43,10 @@ const popularVehicles = [
     id: '2',
     name: 'Honda CBR',
     location: 'Galle',
-    price: '500 LKR /hr',
+    price: '500 LKR /D',
     rating: 4.5,
     status: 'Available',
-    image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400',
+    image: 'https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=400&auto=format&fit=crop&q=80',
     features: [
       { icon: 'settings', label: 'Manual' },
       { icon: 'speed', label: '200 CC' },
@@ -141,7 +141,7 @@ const HomeScreen = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.searchBar}
-          onPress={() => navigation.navigate('Explore')}
+          onPress={() => navigation.navigate('MainTabs', { screen: 'Explore' })}
         >
           <View style={styles.searchIconWrapper}>
             <Ionicons name="search" size={18} color={COLORS.white} />
@@ -154,14 +154,18 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.sectionTitle}>Categories</Text>
           </View>
           <View style={styles.categoryGrid}>
-            {categories.map(renderCategory)}
+            {categories.slice(0, 4).map(renderCategory)}
+          </View>
+          <View style={styles.categoryGrid}>
+            {categories.slice(4, 7).map(renderCategory)}
+            <View style={styles.emptyCategory} />
           </View>
         </View>
 
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Popular Vehicles</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('MainTabs', { screen: 'Explore' })}>
               <Text style={styles.seeAll}>See All</Text>
             </TouchableOpacity>
           </View>
@@ -291,13 +295,12 @@ const styles = StyleSheet.create({
   },
   categoryGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
   categoryCard: {
-    width: '30%',
     alignItems: 'center',
-    gap: 8,
+    width: '23%', 
   },
   categoryIcon: {
     width: 64,
@@ -311,11 +314,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 10,
     elevation: 4,
+    marginBottom: 8,
   },
   categoryLabel: {
     fontSize: 13,
     fontWeight: '500',
     color: COLORS.black,
+    textAlign: 'center',
+  },
+  emptyCategory: {
+    width: '23%', 
   },
   vehicleCard: {
     backgroundColor: COLORS.white,
