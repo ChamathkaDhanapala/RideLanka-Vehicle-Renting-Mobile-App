@@ -57,12 +57,12 @@ const normalizeFeatures = (features = []) => {
       const lower = feature.toLowerCase();
       const icon =
         lower.includes('auto') ? 'settings' :
-        lower.includes('petrol') || lower.includes('fuel') ? 'local-gas-station' :
-        lower.includes('seat') ? 'airline-seat-recline-normal' :
-        lower.includes('a/c') ? 'ac-unit' :
-        lower.includes('bluetooth') ? 'bluetooth' :
-        lower.includes('gps') ? 'gps-fixed' :
-        'check';
+          lower.includes('petrol') || lower.includes('fuel') ? 'local-gas-station' :
+            lower.includes('seat') ? 'airline-seat-recline-normal' :
+              lower.includes('a/c') ? 'ac-unit' :
+                lower.includes('bluetooth') ? 'bluetooth' :
+                  lower.includes('gps') ? 'gps-fixed' :
+                    'check';
       return { label: feature, icon };
     }
     return feature;
@@ -73,14 +73,14 @@ const VehicleDetailsScreen = ({ navigation, route }) => {
   const vehicle = { ...FALLBACK_VEHICLE, ...(route?.params?.vehicle || {}) };
   const features = normalizeFeatures(vehicle.features || FALLBACK_VEHICLE.features);
   const galleryImages = vehicle.images || FALLBACK_VEHICLE.images;
-  
+
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalIndex, setModalIndex] = useState(0);
 
   const handleOpenMaps = () => {
     const { latitude, longitude } = vehicle.coordinates || FALLBACK_VEHICLE.coordinates;
-    
+
     if (Platform.OS === 'ios') {
       // Apple Maps
       Linking.openURL(`http://maps.apple.com/?ll=${latitude},${longitude}&q=${encodeURIComponent(vehicle.location)}`);
@@ -96,11 +96,11 @@ const VehicleDetailsScreen = ({ navigation, route }) => {
   };
 
   const renderImageItem = ({ item, index }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[
         styles.galleryImageContainer,
         index === 0 && styles.firstGalleryImage
-      ]} 
+      ]}
       onPress={() => handleImagePress(index)}
       activeOpacity={0.8}
     >
@@ -122,7 +122,7 @@ const VehicleDetailsScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
-      
+
       {/* Image Gallery Modal */}
       <Modal
         visible={modalVisible}
@@ -131,13 +131,13 @@ const VehicleDetailsScreen = ({ navigation, route }) => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.modalCloseButton}
             onPress={() => setModalVisible(false)}
           >
             <Ionicons name="close" size={28} color={COLORS.white} />
           </TouchableOpacity>
-          
+
           <FlatList
             data={galleryImages}
             renderItem={renderModalItem}
@@ -152,7 +152,7 @@ const VehicleDetailsScreen = ({ navigation, route }) => {
               index,
             })}
           />
-          
+
           <View style={styles.modalPagination}>
             <Text style={styles.modalPaginationText}>
               {modalIndex + 1} / {galleryImages.length}
@@ -220,8 +220,8 @@ const VehicleDetailsScreen = ({ navigation, route }) => {
             <Text style={styles.vehicleTitle}>{vehicle.name}</Text>
             <Text style={styles.vehicleType}>{vehicle.type}</Text>
             <Text style={styles.vehiclePrice}>{vehicle.price}</Text>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.locationRow}
               onPress={handleOpenMaps}
               activeOpacity={0.7}
@@ -231,7 +231,7 @@ const VehicleDetailsScreen = ({ navigation, route }) => {
               <Ionicons name="open-outline" size={14} color={COLORS.gray} />
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.summaryRight}>
             <View style={styles.ratingRow}>
               <Ionicons name="star" size={16} color="#FBBF24" />
@@ -331,7 +331,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.black,
   },
-  // Hero Image Styles
   heroCard: {
     marginHorizontal: 20,
     backgroundColor: COLORS.white,
@@ -376,8 +375,7 @@ const styles = StyleSheet.create({
   },
   dotActive: {
     backgroundColor: COLORS.primary,
-  },
-  // Gallery Styles
+  },// Gallery Styles
   gallerySection: {
     marginHorizontal: 20,
     marginBottom: 20,
@@ -415,7 +413,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  // Modal Styles
   modalContainer: {
     flex: 1,
     backgroundColor: 'black',
@@ -456,7 +453,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  // Summary Card
+
   summaryCard: {
     flexDirection: 'row',
     padding: 20,
@@ -540,7 +537,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: COLORS.success,
   },
-  // Section Styles
+
   sectionCard: {
     marginHorizontal: 20,
     backgroundColor: COLORS.white,
