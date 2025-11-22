@@ -9,7 +9,7 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 import { VEHICLE_DATA, ALL_VEHICLES } from '../data/vehicles';
 
@@ -30,10 +30,9 @@ const ExploreScreen = ({ navigation, route }) => {
     { id: '4', name: 'Tuk-Tuk', icon: 'moped' },
     { id: '5', name: 'Van', icon: 'airport-shuttle' },
     { id: '6', name: 'Bicycle', icon: 'pedal-bike' },
-    { id: '7', name: 'SUV', icon: 'suv' },
-    { id: '8', name: 'Jeep', icon: 'jeep' },
+    { id: '7', name: 'SUV', icon: 'local-shipping' },
+    { id: '8', name: 'Jeep', icon: 'offline-bolt' },
   ];
-
 
   let filteredVehicles = selectedCategory === 'All'
     ? ALL_VEHICLES
@@ -77,7 +76,7 @@ const ExploreScreen = ({ navigation, route }) => {
         style={styles.favoriteButton}
         onPress={() => toggleFavorite(item.id)}
       >
-        <Icon
+        <MaterialIcons
           name={favorites.includes(item.id) ? "favorite" : "favorite-border"}
           size={20}
           color={favorites.includes(item.id) ? COLORS.error : COLORS.white}
@@ -85,7 +84,7 @@ const ExploreScreen = ({ navigation, route }) => {
       </TouchableOpacity>
 
       <View style={styles.ratingBadge}>
-        <Icon name="star" size={12} color="#FBBF24" />
+        <Ionicons name="star" size={12} color="#FBBF24" />
         <Text style={styles.ratingText}>{item.rating}</Text>
       </View>
 
@@ -94,7 +93,7 @@ const ExploreScreen = ({ navigation, route }) => {
 
         {/* Location */}
         <View style={styles.locationRow}>
-          <Icon name="location-on" size={12} color={COLORS.gray} />
+          <MaterialIcons name="location-on" size={12} color={COLORS.gray} />
           <Text style={styles.vehicleLocation}>{item.location}</Text>
         </View>
 
@@ -124,26 +123,32 @@ const ExploreScreen = ({ navigation, route }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="chevron-back" size={20} color={COLORS.black} />
+          </TouchableOpacity>
           <Text style={styles.title}>Explore Vehicles</Text>
           <TouchableOpacity
             style={styles.notificationButton}
             onPress={() => navigation.navigate('Notifications')}
           >
-            <Icon name="notifications" size={20} color={COLORS.black} />
+            <Ionicons name="notifications-outline" size={20} color={COLORS.hero} />
           </TouchableOpacity>
         </View>
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchInput}>
-            <Icon name="search" size={20} color={COLORS.gray} />
+            <MaterialIcons name="search" size={20} color={COLORS.gray} />
             <Text style={styles.searchText}>Search vehicles...</Text>
           </View>
           <TouchableOpacity
             style={styles.filterButton}
             onPress={() => navigation.navigate('Filter')}
           >
-            <Icon name="tune" size={22} color={COLORS.white} />
+            <MaterialIcons name="tune" size={22} color={COLORS.white} />
           </TouchableOpacity>
         </View>
 
@@ -175,7 +180,7 @@ const ExploreScreen = ({ navigation, route }) => {
               ]}
               onPress={() => setSelectedCategory(category.name)}
             >
-              <Icon
+              <MaterialIcons
                 name={category.icon}
                 size={20}
                 color={selectedCategory === category.name ? COLORS.white : COLORS.primary}
@@ -200,7 +205,7 @@ const ExploreScreen = ({ navigation, route }) => {
 
         {filteredVehicles.length === 0 ? (
           <View style={styles.emptyState}>
-            <Icon name="search-off" size={60} color={COLORS.gray} />
+            <MaterialIcons name="search-off" size={60} color={COLORS.gray} />
             <Text style={styles.emptyStateText}>No vehicles found</Text>
             <Text style={styles.emptyStateSubtext}>
               Try adjusting your filters or search criteria
@@ -235,18 +240,34 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: COLORS.black,
+    textAlign: 'center',
+    flex: 1,
+    marginHorizontal: 12,
   },
   notificationButton: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: 12,
     backgroundColor: COLORS.white,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#0F3D3E',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
