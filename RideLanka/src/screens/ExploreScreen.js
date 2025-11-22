@@ -7,43 +7,43 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../constants/colors';
+import { VEHICLE_DATA, ALL_VEHICLES } from '../data/vehicles';
+
+const { width } = Dimensions.get('window');
+const CARD_MARGIN = 8;
+const CARD_WIDTH = (width - 40 - CARD_MARGIN) / 2;
 
 const ExploreScreen = ({ navigation }) => {
-  const [selectedCategory, setSelectedCategory] = useState('Car');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [favorites, setFavorites] = useState([]);
 
   const categories = [
-    { id: '1', name: 'Car', icon: 'directions-car' },
-    { id: '2', name: 'Bike', icon: 'motorcycle' },
-    { id: '3', name: 'Tuk-Tuk', icon: 'auto-rickshaw' },
-    { id: '4', name: 'Van', icon: 'airport-shuttle' },
-  ] || [];
-
-  const vehicles = [
-    {
-      id: '1',
-      name: 'BMW X5',
-      type: 'SUV',
-      price: '1000 LKR /day',
-      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400',
-    },
-    {
-      id: '2',
-      name: 'Toyota Prius',
-      type: 'Car',
-      price: '800 LKR /day',
-      image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400',
-    },
-    {
-      id: '3',
-      name: 'Honda Civic',
-      type: 'Car',
-      price: '750 LKR /day',
-      image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400',
-    },
+    { id: '1', name: 'All', icon: 'all-inclusive' },
+    { id: '2', name: 'Car', icon: 'directions-car' },
+    { id: '3', name: 'Bike', icon: 'motorcycle' },
+    { id: '4', name: 'Tuk-Tuk', icon: 'moped' },
+    { id: '5', name: 'Van', icon: 'airport-shuttle' },
+    { id: '6', name: 'Bicycle', icon: 'pedal-bike' },
+    { id: '7', name: 'SUV', icon: 'suv' },
+    { id: '8', name: 'Jeep', icon: 'jeep' },
   ];
+
+  // Filter vehicles based on selected category
+  const filteredVehicles = selectedCategory === 'All' 
+    ? ALL_VEHICLES 
+    : VEHICLE_DATA[selectedCategory] || [];
+
+  const toggleFavorite = (vehicleId) => {
+    if (favorites.includes(vehicleId)) {
+      setFavorites(favorites.filter(id => id !== vehicleId));
+    } else {
+      setFavorites([...favorites, vehicleId]);
+    }
+  };
 
   const renderVehicleCard = ({ item }) => (
     <TouchableOpacity 
@@ -51,10 +51,36 @@ const ExploreScreen = ({ navigation }) => {
       onPress={() => navigation.navigate('VehicleDetails', { vehicle: item })}
     >
       <Image source={{ uri: item.image }} style={styles.vehicleImage} />
+      
+      {/* Favorite Button */}
+      <TouchableOpacity 
+        style={styles.favoriteButton}
+        onPress={() => toggleFavorite(item.id)}
+      >
+        <Icon 
+          name={favorites.includes(item.id) ? "favorite" : "favorite-border"} 
+          size={20} 
+          color={favorites.includes(item.id) ? COLORS.error : COLORS.white} 
+        />
+      </TouchableOpacity>
+      
+      <View style={styles.ratingBadge}>
+        <Text style={styles.ratingText}>{item.rating}</Text>
+      </View>
+      
       <View style={styles.vehicleInfo}>
-        <Text style={styles.vehicleName}>{item.name}</Text>
+        <Text style={styles.vehicleName} numberOfLines={1}>{item.name}</Text>
         <Text style={styles.vehicleType}>{item.type}</Text>
         <Text style={styles.vehiclePrice}>{item.price}</Text>
+        
+        <View style={styles.features}>
+          {item.features.slice(0, 2).map((feature, index) => (
+            <View key={index} style={styles.featureTag}>
+              <Text style={styles.featureText}>{feature}</Text>
+            </View>
+          ))}
+        </View>
+        
         <TouchableOpacity
           style={styles.seeMoreButton}
           onPress={() => navigation.navigate('VehicleDetails', { vehicle: item })}
@@ -70,7 +96,7 @@ const ExploreScreen = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Vehicle Rent</Text>
+          <Text style={styles.title}>Explore Vehicles</Text>
           <TouchableOpacity
             style={styles.notificationButton}
             onPress={() => navigation.navigate('Notifications')}
@@ -94,8 +120,12 @@ const ExploreScreen = ({ navigation }) => {
         </View>
 
         {/* Categories */}
-        <Text style={styles.sectionTitle}>Vehicle Type</Text>
-        <View style={styles.categoriesContainer}>
+        <Text style={styles.sectionTitle}>Categories</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesContainer}
+        >
           {categories.map((category) => (
             <TouchableOpacity
               key={category.id}
@@ -118,22 +148,24 @@ const ExploreScreen = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
 
-        {/* Popular Cars */}
+        {/* Vehicles Grid */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Popular Cars</Text>
-          <TouchableOpacity>
-            <Text style={styles.seeAllText}>See All</Text>
-          </TouchableOpacity>
+          <Text style={styles.sectionTitle}>
+            {selectedCategory === 'All' ? 'All Vehicles' : selectedCategory + 's'}
+          </Text>
+          <Text style={styles.vehicleCount}>({filteredVehicles.length})</Text>
         </View>
 
         <FlatList
-          data={vehicles}
+          data={filteredVehicles}
           renderItem={renderVehicleCard}
           keyExtractor={item => item.id}
+          numColumns={2}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.vehiclesGrid}
         />
       </ScrollView>
     </View>
@@ -223,25 +255,24 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     marginBottom: 16,
   },
-  seeAllText: {
-    color: COLORS.primary,
-    fontWeight: '600',
+  vehicleCount: {
+    color: COLORS.gray,
+    fontWeight: '500',
   },
   categoriesContainer: {
-    flexDirection: 'row',
     paddingHorizontal: 20,
-    marginBottom: 24,
-    gap: 12,
+    paddingBottom: 8,
   },
   categoryButton: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: COLORS.white,
-    padding: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
+    marginRight: 12,
+    minWidth: 100,
   },
   selectedCategory: {
     backgroundColor: COLORS.primary,
@@ -254,11 +285,14 @@ const styles = StyleSheet.create({
   selectedCategoryText: {
     color: COLORS.white,
   },
+  vehiclesGrid: {
+    paddingHorizontal: 12,
+  },
   vehicleCard: {
+    width: CARD_WIDTH,
     backgroundColor: COLORS.white,
     borderRadius: 16,
-    marginHorizontal: 20,
-    marginBottom: 16,
+    margin: CARD_MARGIN,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -268,39 +302,64 @@ const styles = StyleSheet.create({
   },
   vehicleImage: {
     width: '100%',
-    height: 150,
+    height: 120,
+  },
+  ratingBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: COLORS.white,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  ratingText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: COLORS.black,
   },
   vehicleInfo: {
-    padding: 16,
+    padding: 12,
   },
   vehicleName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: COLORS.black,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   vehicleType: {
-    fontSize: 14,
+    fontSize: 12,
     color: COLORS.gray,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   vehiclePrice: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: COLORS.secondary,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   seeMoreButton: {
     backgroundColor: COLORS.primary,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
     alignSelf: 'flex-start',
   },
   seeMoreText: {
     color: COLORS.white,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
