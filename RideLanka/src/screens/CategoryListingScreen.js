@@ -1,178 +1,133 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   Image,
   TouchableOpacity,
   StatusBar,
+  FlatList,
+  Dimensions,
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
+import { VEHICLE_DATA } from '../data/vehicles';
 
-const VEHICLES_BY_CATEGORY = {
-  Car: [
-    {
-      id: 'car-1',
-      name: 'BMW M4',
-      price: '1000 LKR /day',
-      location: 'Colombo',
-      image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=900',
-      features: ['Automatic', 'Petrol', '5 Seats'],
-    },
-    {
-      id: 'car-2',
-      name: 'Mini Cooper',
-      price: '900 LKR /day',
-      location: 'Kandy',
-      image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=800',
-      features: ['Automatic', 'Hybrid', '4 Seats'],
-    },
-  ],
-  Bike: [
-    {
-      id: 'bike-1',
-      name: 'Yamaha MT 15',
-      price: '300 LKR /day',
-      location: 'Galle',
-      image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800',
-      features: ['Manual', 'Petrol', '2 Seats'],
-    },
-    {
-      id: 'bike-2',
-      name: 'Honda CBR',
-      price: '350 LKR /day',
-      location: 'Matara',
-      image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=700',
-      features: ['Manual', 'Petrol', '2 Seats'],
-    },
-  ],
-  'Tuk-Tuk': [
-    {
-      id: 'tuk-1',
-      name: 'Bajaj RE',
-      price: '250 LKR /day',
-      location: 'Colombo',
-      image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=600',
-      features: ['Manual', 'Petrol', '3 Seats'],
-    },
-  ],
-  Van: [
-    {
-      id: 'van-1',
-      name: 'Toyota Hiace',
-      price: '1500 LKR /day',
-      location: 'Negombo',
-      image: 'https://images.unsplash.com/photo-1529429617124-aee711a70486?w=900',
-      features: ['Automatic', 'Diesel', '8 Seats'],
-    },
-  ],
-  Bicycle: [
-    {
-      id: 'bicycle-1',
-      name: 'Giant Escape',
-      price: '120 LKR /day',
-      location: 'Galle Face',
-      image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=700',
-      features: ['Manual', 'No Fuel', '1 Seat'],
-    },
-  ],
-  SUV: [
-    {
-      id: 'suv-1',
-      name: 'Range Rover Sport',
-      price: '1800 LKR /day',
-      location: 'Colombo 7',
-      image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=950',
-      features: ['Automatic', 'Diesel', '7 Seats'],
-    },
-  ],
-  Jeep: [
-    {
-      id: 'jeep-1',
-      name: 'Jeep Wrangler',
-      price: '1600 LKR /day',
-      location: 'Ella',
-      image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=880',
-      features: ['Automatic', 'Petrol', '5 Seats'],
-    },
-  ],
-};
+const { width } = Dimensions.get('window');
+const CARD_MARGIN = 8;
+const CARD_WIDTH = (width - 40 - CARD_MARGIN) / 2;
 
 const CategoryListingScreen = ({ navigation, route }) => {
   const category = route?.params?.category || 'Car';
-  const list = VEHICLES_BY_CATEGORY[category] || [];
+  const [favorites, setFavorites] = useState([]);
+  
+  const list = VEHICLE_DATA[category] || [];
+
+  const toggleFavorite = (vehicleId) => {
+    if (favorites.includes(vehicleId)) {
+      setFavorites(favorites.filter(id => id !== vehicleId));
+    } else {
+      setFavorites([...favorites, vehicleId]);
+    }
+  };
+
+  const renderVehicleCard = ({ item }) => (
+    <TouchableOpacity 
+      style={styles.vehicleCard}
+      onPress={() => navigation.navigate('VehicleDetails', { vehicle: item })}
+    >
+      <Image source={{ uri: item.image }} style={styles.vehicleImage} />
+      
+      {/* Favorite Button */}
+      <TouchableOpacity 
+        style={styles.favoriteButton}
+        onPress={() => toggleFavorite(item.id)}
+      >
+        <MaterialIcons 
+          name={favorites.includes(item.id) ? "favorite" : "favorite-border"} 
+          size={20} 
+          color={favorites.includes(item.id) ? COLORS.error : COLORS.white} 
+        />
+      </TouchableOpacity>
+      
+      <View style={styles.ratingBadge}>
+        <Text style={styles.ratingText}>{item.rating}</Text>
+      </View>
+      
+      <View style={styles.vehicleInfo}>
+        <Text style={styles.vehicleName} numberOfLines={1}>{item.name}</Text>
+        <Text style={styles.vehicleType}>{item.location}</Text>
+        <Text style={styles.vehiclePrice}>{item.price}</Text>
+        
+        <View style={styles.features}>
+          {item.features.slice(0, 2).map((feature, index) => (
+            <View key={index} style={styles.featureTag}>
+              <Text style={styles.featureText}>{feature}</Text>
+            </View>
+          ))}
+        </View>
+        
+        <TouchableOpacity
+          style={styles.seeMoreButton}
+          onPress={() => navigation.navigate('VehicleDetails', { vehicle: item })}
+        >
+          <Text style={styles.seeMoreText}>See more</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 32 }}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.headerIcon}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="chevron-back" size={20} color={COLORS.black} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{category}</Text>
-          <TouchableOpacity
-            style={styles.headerIcon}
-            onPress={() => navigation.navigate('Notifications')}
-          >
-            <Ionicons name="notifications-outline" size={18} color={COLORS.black} />
-          </TouchableOpacity>
-        </View>
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.headerIcon}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back" size={20} color={COLORS.black} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{category}</Text>
+        <TouchableOpacity
+          style={styles.headerIcon}
+          onPress={() => navigation.navigate('Notifications')}
+        >
+          <Ionicons name="notifications-outline" size={18} color={COLORS.black} />
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.searchRow}>
-          <View style={styles.searchInput}>
-            <Ionicons name="search" size={18} color={COLORS.gray} />
-            <Text style={styles.searchPlaceholder}>Search {category}...</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => navigation.navigate('Filter')}
-          >
-            <MaterialIcons name="tune" size={22} color={COLORS.white} />
-          </TouchableOpacity>
+      {/* Search Bar */}
+      <View style={styles.searchRow}>
+        <View style={styles.searchInput}>
+          <Ionicons name="search" size={18} color={COLORS.gray} />
+          <Text style={styles.searchPlaceholder}>Search {category}...</Text>
         </View>
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => navigation.navigate('Filter')}
+        >
+          <MaterialIcons name="tune" size={22} color={COLORS.white} />
+        </TouchableOpacity>
+      </View>
 
-        {list.map((vehicle) => (
-          <TouchableOpacity
-            key={vehicle.id}
-            style={styles.card}
-            onPress={() => navigation.navigate('VehicleDetails', { vehicle })}
-          >
-            <Image source={{ uri: vehicle.image }} style={styles.image} />
-            <View style={styles.cardContent}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>{vehicle.name}</Text>
-                <Text style={styles.price}>{vehicle.price}</Text>
-              </View>
-              <View style={styles.locationRow}>
-                <Ionicons name="location-sharp" size={14} color={COLORS.secondary} />
-                <Text style={styles.locationText}>{vehicle.location}</Text>
-              </View>
-              <View style={styles.featureRow}>
-                {vehicle.features.map((feature, index) => (
-                  <View key={index} style={styles.featureChip}>
-                    <MaterialIcons name="check-circle" size={14} color={COLORS.primary} />
-                    <Text style={styles.featureText}>{feature}</Text>
-                  </View>
-                ))}
-              </View>
-              <View style={styles.cardFooter}>
-                <TouchableOpacity
-                  style={styles.seeMoreButton}
-                  onPress={() => navigation.navigate('VehicleDetails', { vehicle })}
-                >
-                  <Text style={styles.seeMoreText}>See more</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {/* Vehicle Count */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>
+          {list.length} {category}{list.length !== 1 ? 's' : ''} Available
+        </Text>
+      </View>
+
+      {/* 2-Column Grid */}
+      <FlatList
+        data={list}
+        renderItem={renderVehicleCard}
+        keyExtractor={item => item.id}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.vehiclesGrid}
+      />
     </View>
   );
 };
@@ -247,87 +202,109 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  card: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-    borderRadius: 20,
-    backgroundColor: COLORS.white,
-    shadowColor: '#0F3D3E',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 4,
-    overflow: 'hidden',
+  sectionHeader: {
+    paddingHorizontal: 20,
+    marginBottom: 16,
   },
-  image: {
-    width: '100%',
-    height: 160,
-  },
-  cardContent: {
-    padding: 16,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  cardTitle: {
+  sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: COLORS.black,
-    flex: 1,
   },
-  price: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.secondary,
+  vehiclesGrid: {
+    paddingHorizontal: 12,
+    paddingBottom: 20,
   },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 12,
+  vehicleCard: {
+    width: CARD_WIDTH,
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    margin: CARD_MARGIN,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  locationText: {
-    color: COLORS.gray,
-    fontSize: 13,
+  vehicleImage: {
+    width: '100%',
+    height: 120,
   },
-  featureRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  featureChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: COLORS.background,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+  ratingBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: COLORS.white,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     borderRadius: 12,
   },
-  featureText: {
-    fontSize: 12,
+  ratingText: {
+    fontSize: 10,
+    fontWeight: '600',
     color: COLORS.black,
   },
-  cardFooter: {
-    marginTop: 12,
+  vehicleInfo: {
+    padding: 12,
+  },
+  vehicleName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.black,
+    marginBottom: 2,
+  },
+  vehicleType: {
+    fontSize: 12,
+    color: COLORS.gray,
+    marginBottom: 4,
+  },
+  vehiclePrice: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.secondary,
+    marginBottom: 8,
+  },
+  features: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexWrap: 'wrap',
+    gap: 4,
+    marginBottom: 8,
+  },
+  featureTag: {
+    backgroundColor: COLORS.background,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  featureText: {
+    fontSize: 10,
+    color: COLORS.gray,
+    fontWeight: '500',
   },
   seeMoreButton: {
-    backgroundColor: COLORS.hero,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
   },
   seeMoreText: {
     color: COLORS.white,
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
 export default CategoryListingScreen;
-
