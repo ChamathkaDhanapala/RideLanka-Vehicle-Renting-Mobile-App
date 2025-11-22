@@ -17,9 +17,11 @@ const { width } = Dimensions.get('window');
 const CARD_MARGIN = 8;
 const CARD_WIDTH = (width - 40 - CARD_MARGIN) / 2;
 
-const ExploreScreen = ({ navigation }) => {
+const ExploreScreen = ({ navigation, route }) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [favorites, setFavorites] = useState([]);
+
+  const filters = route.params?.filters;
 
   const categories = [
     { id: '1', name: 'All', icon: 'all-inclusive' },
@@ -32,10 +34,31 @@ const ExploreScreen = ({ navigation }) => {
     { id: '8', name: 'Jeep', icon: 'jeep' },
   ];
 
-  // Filter vehicles based on selected category
-  const filteredVehicles = selectedCategory === 'All' 
+  let filteredVehicles = selectedCategory === 'All' 
     ? ALL_VEHICLES 
     : VEHICLE_DATA[selectedCategory] || [];
+
+
+  if (filters) {
+    filteredVehicles = filteredVehicles.filter(vehicle => {
+      if (filters.vehicleType && filters.vehicleType !== 'All' && vehicle.type !== filters.vehicleType) {
+        return false;
+      }
+
+      if (filters.location && vehicle.location !== filters.location) {
+        return false;
+      }
+      
+
+      if (filters.priceRange) {
+        const price = parseInt(vehicle.price.replace(/[^0-9]/g, ''));
+        if (price < filters.priceRange.min || price > filters.priceRange.max) {
+          return false;
+        }
+      }   
+      return true;
+    });
+  }
 
   const toggleFavorite = (vehicleId) => {
     if (favorites.includes(vehicleId)) {
@@ -65,14 +88,22 @@ const ExploreScreen = ({ navigation }) => {
       </TouchableOpacity>
       
       <View style={styles.ratingBadge}>
+        <Icon name="star" size={12} color="#FBBF24" />
         <Text style={styles.ratingText}>{item.rating}</Text>
       </View>
       
       <View style={styles.vehicleInfo}>
         <Text style={styles.vehicleName} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.vehicleType}>{item.type}</Text>
+        
+        {/* Location */}
+        <View style={styles.locationRow}>
+          <Icon name="location-on" size={12} color={COLORS.gray} />
+          <Text style={styles.vehicleLocation}>{item.location}</Text>
+        </View>
+        
         <Text style={styles.vehiclePrice}>{item.price}</Text>
         
+        {/* Features as tags */}
         <View style={styles.features}>
           {item.features.slice(0, 2).map((feature, index) => (
             <View key={index} style={styles.featureTag}>
@@ -119,6 +150,18 @@ const ExploreScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+        {/* Applied Filters Indicator */}
+        {filters && (
+          <View style={styles.filtersIndicator}>
+            <Text style={styles.filtersText}>
+              Filters applied: {filters.vehicleType} • {filters.location}
+            </Text>
+            <TouchableOpacity onPress={() => navigation.setParams({ filters: null })}>
+              <Text style={styles.clearFiltersText}>Clear</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* Categories */}
         <Text style={styles.sectionTitle}>Categories</Text>
         <ScrollView 
@@ -158,15 +201,25 @@ const ExploreScreen = ({ navigation }) => {
           <Text style={styles.vehicleCount}>({filteredVehicles.length})</Text>
         </View>
 
-        <FlatList
-          data={filteredVehicles}
-          renderItem={renderVehicleCard}
-          keyExtractor={item => item.id}
-          numColumns={2}
-          scrollEnabled={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.vehiclesGrid}
-        />
+        {filteredVehicles.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Icon name="search-off" size={60} color={COLORS.gray} />
+            <Text style={styles.emptyStateText}>No vehicles found</Text>
+            <Text style={styles.emptyStateSubtext}>
+              Try adjusting your filters or search criteria
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredVehicles}
+            renderItem={renderVehicleCard}
+            keyExtractor={item => item.id}
+            numColumns={2}
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.vehiclesGrid}
+          />
+        )}
       </ScrollView>
     </View>
   );
@@ -207,7 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 20,
-    marginBottom: 24,
+    marginBottom: 16,
     gap: 12,
   },
   searchInput: {
@@ -240,6 +293,27 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 16,
     color: COLORS.gray,
+  },
+  // Filters Indicator
+  filtersIndicator: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#E3F2FD',
+    marginHorizontal: 20,
+    marginBottom: 16,
+    padding: 12,
+    borderRadius: 12,
+  },
+  filtersText: {
+    fontSize: 14,
+    color: COLORS.primary,
+    fontWeight: '500',
+  },
+  clearFiltersText: {
+    fontSize: 14,
+    color: COLORS.error,
+    fontWeight: '600',
   },
   sectionTitle: {
     fontSize: 20,
@@ -308,10 +382,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     left: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: COLORS.white,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
+    gap: 4,
   },
   ratingText: {
     fontSize: 10,
@@ -325,18 +402,40 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: COLORS.black,
-    marginBottom: 2,
+    marginBottom: 4,
   },
-  vehicleType: {
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 4,
+  },
+  vehicleLocation: {
     fontSize: 12,
     color: COLORS.gray,
-    marginBottom: 4,
   },
   vehiclePrice: {
     fontSize: 14,
     fontWeight: '600',
     color: COLORS.secondary,
     marginBottom: 8,
+  },
+  features: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+    marginBottom: 8,
+  },
+  featureTag: {
+    backgroundColor: COLORS.background,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  featureText: {
+    fontSize: 10,
+    color: COLORS.gray,
+    fontWeight: '500',
   },
   seeMoreButton: {
     backgroundColor: COLORS.primary,
@@ -360,6 +459,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  // Empty State
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 40,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.black,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: COLORS.gray,
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });
 
