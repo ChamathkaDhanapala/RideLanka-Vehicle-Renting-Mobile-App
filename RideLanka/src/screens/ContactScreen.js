@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Linking,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../constants/colors';
@@ -15,6 +16,12 @@ const DEFAULT_VEHICLE = {
   owner: 'Nihal Senarathne',
   phone: '+94 76 4533 239',
   location: 'Colombo Fort',
+  address: 'Colombo Fort, Colombo, Sri Lanka',
+  coordinates: {
+    latitude: 6.9271,
+    longitude: 79.8612,
+  },
+  notes: 'Please call 15 minutes before arrival. Parking available in front of the building.',
 };
 
 const ContactScreen = ({ route }) => {
@@ -31,6 +38,44 @@ const ContactScreen = ({ route }) => {
 
   const handleWhatsApp = () => {
     Linking.openURL(`whatsapp://send?phone=${safePhone.replace(/\s/g, '')}`);
+  };
+
+  const handleOpenMaps = () => {
+    const { latitude, longitude } = vehicle.coordinates;
+    
+    // Platform-specific map URLs
+    const scheme = Platform.select({
+      ios: 'http://maps.apple.com/?',
+      android: 'geo:',
+    });
+    
+    const latLng = `${latitude},${longitude}`;
+    const label = vehicle.location;
+    
+    if (Platform.OS === 'ios') {
+      // Apple Maps
+      Linking.openURL(`http://maps.apple.com/?daddr=${latLng}&dirflg=d`);
+    } else {
+      // Android - try Google Maps first, then fallback to generic geo
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latLng}&travelmode=driving`;
+      const geoUrl = `geo:${latLng}?q=${latLng}(${encodeURIComponent(label)})`;
+      
+      Linking.openURL(googleMapsUrl).catch(() => {
+        Linking.openURL(geoUrl);
+      });
+    }
+  };
+
+  const handleViewOnMap = () => {
+    const { latitude, longitude } = vehicle.coordinates;
+    
+    if (Platform.OS === 'ios') {
+      // Apple Maps
+      Linking.openURL(`http://maps.apple.com/?ll=${latitude},${longitude}&q=${encodeURIComponent(vehicle.location)}`);
+    } else {
+      // Android - Google Maps
+      Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`);
+    }
   };
 
   return (
@@ -63,9 +108,49 @@ const ContactScreen = ({ route }) => {
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Pickup Location</Text>
             <Text style={styles.infoValue}>{vehicle.location}</Text>
+            <Text style={styles.addressText}>{vehicle.address}</Text>
           </View>
         </View>
       </View>
+
+      {/* Location Card */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Pickup Location</Text>
+        
+        <View style={styles.locationCard}>
+          <Icon name="place" size={40} color={COLORS.primary} />
+          <View style={styles.locationInfo}>
+            <Text style={styles.locationTitle}>{vehicle.location}</Text>
+            <Text style={styles.locationAddress}>{vehicle.address}</Text>
+            <Text style={styles.coordinates}>
+              Coordinates: {vehicle.coordinates.latitude.toFixed(4)}, {vehicle.coordinates.longitude.toFixed(4)}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.locationButtons}>
+          <TouchableOpacity style={styles.directionsButton} onPress={handleOpenMaps}>
+            <Icon name="directions" size={20} color={COLORS.white} />
+            <Text style={styles.directionsButtonText}>Get Directions</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.viewMapButton} onPress={handleViewOnMap}>
+            <Icon name="map" size={20} color={COLORS.primary} />
+            <Text style={styles.viewMapButtonText}>View on Map</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Owner Notes */}
+      {vehicle.notes && (
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Owner Notes</Text>
+          <View style={styles.notesContainer}>
+            <Icon name="notes" size={20} color={COLORS.primary} style={styles.notesIcon} />
+            <Text style={styles.notesText}>{vehicle.notes}</Text>
+          </View>
+        </View>
+      )}
 
       {/* Important Note */}
       <View style={styles.noteCard}>
@@ -102,6 +187,10 @@ const ContactScreen = ({ route }) => {
         <View style={styles.tipItem}>
           <Icon name="check-circle" size={16} color={COLORS.success} />
           <Text style={styles.tipText}>Inspect vehicle thoroughly</Text>
+        </View>
+        <View style={styles.tipItem}>
+          <Icon name="check-circle" size={16} color={COLORS.success} />
+          <Text style={styles.tipText}>Share your location with friends/family</Text>
         </View>
       </View>
     </ScrollView>
@@ -159,6 +248,88 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: COLORS.black,
+  },
+  addressText: {
+    fontSize: 14,
+    color: COLORS.gray,
+    marginTop: 2,
+  },
+  // Location Styles
+  locationCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 15,
+    gap: 15,
+  },
+  locationInfo: {
+    flex: 1,
+  },
+  locationTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.black,
+    marginBottom: 4,
+  },
+  locationAddress: {
+    fontSize: 14,
+    color: COLORS.gray,
+    marginBottom: 4,
+  },
+  coordinates: {
+    fontSize: 12,
+    color: COLORS.gray,
+    fontFamily: 'monospace',
+  },
+  locationButtons: {
+    gap: 10,
+  },
+  directionsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
+    padding: 15,
+    borderRadius: 8,
+    gap: 8,
+  },
+  directionsButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  viewMapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.white,
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    gap: 8,
+  },
+  viewMapButtonText: {
+    color: COLORS.primary,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  // Notes Styles
+  notesContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  notesIcon: {
+    marginTop: 2,
+  },
+  notesText: {
+    flex: 1,
+    fontSize: 14,
+    color: COLORS.gray,
+    lineHeight: 20,
   },
   noteCard: {
     flexDirection: 'row',
