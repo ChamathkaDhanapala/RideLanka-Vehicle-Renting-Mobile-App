@@ -8,7 +8,7 @@ import {
   Image,
   StatusBar,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 
 const ProfileScreen = ({ navigation }) => {
@@ -18,6 +18,7 @@ const ProfileScreen = ({ navigation }) => {
     phone: '+94 76 4533 239',
     email: 'David@gmail.com',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80',
+    isOwner: false, // Default is tourist
   };
 
   const infoRows = [
@@ -54,8 +55,102 @@ const ProfileScreen = ({ navigation }) => {
             <Image source={{ uri: userInfo.avatar }} style={styles.avatar} />
           </View>
           <Text style={styles.userName}>{userInfo.name}</Text>
-          <Ionicons name="chevron-down" size={16} color={COLORS.muted} />
+          
+          {/* User Type Badge */}
+          <View style={[
+            styles.userTypeBadge,
+            userInfo.isOwner ? styles.ownerBadge : styles.touristBadge
+          ]}>
+            <MaterialIcons 
+              name={userInfo.isOwner ? "directions-car" : "person"} 
+              size={14} 
+              color={userInfo.isOwner ? COLORS.white : COLORS.primary} 
+            />
+            <Text style={[
+              styles.userTypeText,
+              userInfo.isOwner ? styles.ownerText : styles.touristText
+            ]}>
+              {userInfo.isOwner ? 'Vehicle Owner' : 'Tourist'}
+            </Text>
+          </View>
         </View>
+
+        {/* Become an Owner Section - Only show if user is NOT an owner */}
+        {!userInfo.isOwner && (
+          <View style={styles.becomeOwnerSection}>
+            <Text style={styles.sectionTitle}>Become a Vehicle Owner</Text>
+            <Text style={styles.sectionSubtitle}>
+              List your vehicle and earn money from tourists
+            </Text>
+            
+            <TouchableOpacity 
+              style={styles.becomeOwnerButton}
+              onPress={() => navigation.navigate('PostVehicle')}
+            >
+              <View style={styles.becomeOwnerContent}>
+                <View style={styles.ownerIcon}>
+                  <MaterialIcons name="add-business" size={24} color={COLORS.primary} />
+                </View>
+                <View style={styles.ownerTextContent}>
+                  <Text style={styles.becomeOwnerTitle}>Start Renting Your Vehicle</Text>
+                  <Text style={styles.becomeOwnerSubtitle}>Post your first vehicle in minutes</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={COLORS.gray} />
+            </TouchableOpacity>
+
+            <View style={styles.benefits}>
+              <View style={styles.benefitItem}>
+                <MaterialIcons name="attach-money" size={16} color={COLORS.success} />
+                <Text style={styles.benefitText}>Earn extra income</Text>
+              </View>
+              <View style={styles.benefitItem}>
+                <MaterialIcons name="groups" size={16} color={COLORS.success} />
+                <Text style={styles.benefitText}>Connect with tourists</Text>
+              </View>
+              <View style={styles.benefitItem}>
+                <MaterialIcons name="schedule" size={16} color={COLORS.success} />
+                <Text style={styles.benefitText}>Flexible timing</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Owner Dashboard - Only show if user IS an owner */}
+        {userInfo.isOwner && (
+          <View style={styles.ownerSection}>
+            <Text style={styles.sectionTitle}>Owner Dashboard</Text>
+            
+            <TouchableOpacity 
+              style={styles.ownerButton}
+              onPress={() => navigation.navigate('PostVehicle')}
+            >
+              <View style={styles.ownerButtonLeft}>
+                <View style={styles.ownerIcon}>
+                  <MaterialIcons name="add" size={20} color={COLORS.primary} />
+                </View>
+                <View>
+                  <Text style={styles.ownerButtonTitle}>Post a Vehicle</Text>
+                  <Text style={styles.ownerButtonSubtitle}>List your vehicle for rent</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={COLORS.gray} />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.ownerButton}>
+              <View style={styles.ownerButtonLeft}>
+                <View style={styles.ownerIcon}>
+                  <MaterialIcons name="list-alt" size={20} color={COLORS.primary} />
+                </View>
+                <View>
+                  <Text style={styles.ownerButtonTitle}>My Listings</Text>
+                  <Text style={styles.ownerButtonSubtitle}>3 vehicles listed</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={COLORS.gray} />
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View style={styles.infoContainer}>
           {infoRows.map((row) => (
@@ -128,7 +223,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F2DFD7',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: 16,
   },
   avatar: {
     width: 120,
@@ -141,6 +236,105 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     marginBottom: 8,
   },
+  userTypeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    gap: 6,
+  },
+  touristBadge: {
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+  },
+  ownerBadge: {
+    backgroundColor: COLORS.primary,
+  },
+  userTypeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  touristText: {
+    color: COLORS.primary,
+  },
+  ownerText: {
+    color: COLORS.white,
+  },
+  becomeOwnerSection: {
+    backgroundColor: COLORS.white,
+    marginHorizontal: 20,
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.black,
+    marginBottom: 8,
+  },
+  sectionSubtitle: {
+    fontSize: 14,
+    color: COLORS.gray,
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  becomeOwnerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.background,
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  becomeOwnerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
+  },
+  ownerIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ownerTextContent: {
+    flex: 1,
+  },
+  becomeOwnerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.black,
+    marginBottom: 4,
+  },
+  becomeOwnerSubtitle: {
+    fontSize: 12,
+    color: COLORS.gray,
+  },
+  benefits: {
+    gap: 8,
+  },
+  benefitItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  benefitText: {
+    fontSize: 12,
+    color: COLORS.gray,
+  },
+  
   infoContainer: {
     backgroundColor: COLORS.white,
     marginHorizontal: 20,
