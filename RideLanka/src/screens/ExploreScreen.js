@@ -34,28 +34,25 @@ const ExploreScreen = ({ navigation, route }) => {
     { id: '8', name: 'Jeep', icon: 'jeep' },
   ];
 
-  let filteredVehicles = selectedCategory === 'All' 
-    ? ALL_VEHICLES 
-    : VEHICLE_DATA[selectedCategory] || [];
 
+  let filteredVehicles = selectedCategory === 'All'
+    ? ALL_VEHICLES
+    : VEHICLE_DATA[selectedCategory] || [];
 
   if (filters) {
     filteredVehicles = filteredVehicles.filter(vehicle => {
       if (filters.vehicleType && filters.vehicleType !== 'All' && vehicle.type !== filters.vehicleType) {
         return false;
       }
-
       if (filters.location && vehicle.location !== filters.location) {
         return false;
       }
-      
-
       if (filters.priceRange) {
         const price = parseInt(vehicle.price.replace(/[^0-9]/g, ''));
         if (price < filters.priceRange.min || price > filters.priceRange.max) {
           return false;
         }
-      }   
+      }
       return true;
     });
   }
@@ -69,40 +66,40 @@ const ExploreScreen = ({ navigation, route }) => {
   };
 
   const renderVehicleCard = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.vehicleCard}
       onPress={() => navigation.navigate('VehicleDetails', { vehicle: item })}
     >
       <Image source={{ uri: item.image }} style={styles.vehicleImage} />
-      
+
       {/* Favorite Button */}
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.favoriteButton}
         onPress={() => toggleFavorite(item.id)}
       >
-        <Icon 
-          name={favorites.includes(item.id) ? "favorite" : "favorite-border"} 
-          size={20} 
-          color={favorites.includes(item.id) ? COLORS.error : COLORS.white} 
+        <Icon
+          name={favorites.includes(item.id) ? "favorite" : "favorite-border"}
+          size={20}
+          color={favorites.includes(item.id) ? COLORS.error : COLORS.white}
         />
       </TouchableOpacity>
-      
+
       <View style={styles.ratingBadge}>
         <Icon name="star" size={12} color="#FBBF24" />
         <Text style={styles.ratingText}>{item.rating}</Text>
       </View>
-      
+
       <View style={styles.vehicleInfo}>
         <Text style={styles.vehicleName} numberOfLines={1}>{item.name}</Text>
-        
+
         {/* Location */}
         <View style={styles.locationRow}>
           <Icon name="location-on" size={12} color={COLORS.gray} />
           <Text style={styles.vehicleLocation}>{item.location}</Text>
         </View>
-        
+
         <Text style={styles.vehiclePrice}>{item.price}</Text>
-        
+
         {/* Features as tags */}
         <View style={styles.features}>
           {item.features.slice(0, 2).map((feature, index) => (
@@ -111,7 +108,7 @@ const ExploreScreen = ({ navigation, route }) => {
             </View>
           ))}
         </View>
-        
+
         <TouchableOpacity
           style={styles.seeMoreButton}
           onPress={() => navigation.navigate('VehicleDetails', { vehicle: item })}
@@ -164,8 +161,8 @@ const ExploreScreen = ({ navigation, route }) => {
 
         {/* Categories */}
         <Text style={styles.sectionTitle}>Categories</Text>
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoriesContainer}
         >
@@ -178,10 +175,10 @@ const ExploreScreen = ({ navigation, route }) => {
               ]}
               onPress={() => setSelectedCategory(category.name)}
             >
-              <Icon 
-                name={category.icon} 
-                size={20} 
-                color={selectedCategory === category.name ? COLORS.white : COLORS.primary} 
+              <Icon
+                name={category.icon}
+                size={20}
+                color={selectedCategory === category.name ? COLORS.white : COLORS.primary}
               />
               <Text style={[
                 styles.categoryText,
@@ -294,7 +291,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.gray,
   },
-  // Filters Indicator
   filtersIndicator: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -460,7 +456,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // Empty State
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
