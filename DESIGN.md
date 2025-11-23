@@ -4,16 +4,23 @@
 
 ```
 export const COLORS = {
-  primary: '#2563EB',      // Category icons, primary buttons
-  secondary: '#0B2C2D',    // Location icons, status text
-  background: '#F8FAFC',   // Main app background
-  white: '#FFFFFF',        // Cards, buttons, backgrounds
-  black: '#1E293B',        // Primary text (vehicle names, prices)
-  gray: '#64748B',         // Secondary text (locations, features)
-  hero: '#0B2C2D',         // Hero section background
-  softTeal: '#E8F4F4',     // Status pill background
-  success: '#10B981'       // Status indicator dot
-};
+    primary: '#1E3C38',
+    secondary: '#0F766E',
+    accent: '#EA580C',
+    background: '#E9F3F1',
+    white: '#FFFFFF',
+    black: '#1F2937',
+    gray: '#6B7280',
+    lightGray: '#9CA3AF',
+    border: '#E5E7EB',
+    success: '#10B981',
+    error: '#EF4444',
+    warning: '#F59E0B',
+    heroDark: '#0B2C2D',
+    hero: '#0F3D3E',
+    softTeal: '#DFF2ED',
+    muted: '#7D918C',
+  };
 
 ```
 
