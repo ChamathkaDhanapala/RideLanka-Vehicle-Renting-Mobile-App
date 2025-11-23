@@ -7,7 +7,7 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 
 const { width, height } = Dimensions.get('window');
@@ -26,18 +26,17 @@ const OnboardingScreen = ({ navigation }) => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0B2C2D" />
       
-      {/* Coconut Tree Emoji */}
-      <Text style={styles.treeEmoji}>🌴</Text>
+      {/* White Coconut Tree Icon */}
+      <MaterialCommunityIcons name="palm-tree" size={80} color={COLORS.white} style={styles.treeIcon} />
       
       {/* Ride Lanka Text */}
       <Text style={styles.title}>Ride Lanka</Text>
-      
-      
-      {/*Manual skip button */}
+      {/* Manual skip button */}
       <TouchableOpacity 
         style={styles.skipButton}
         onPress={() => navigation.replace('Splash')}
       >
+        <Ionicons name="chevron-forward" size={20} color={COLORS.white} />
         <Text style={styles.skipText}>Skip</Text>
       </TouchableOpacity>
     </View>
@@ -52,8 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 32,
   },
-  treeEmoji: {
-    fontSize: 80,
+  treeIcon: {
     marginBottom: 20,
   },
   title: {
@@ -63,12 +61,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
-
   skipButton: {
     position: 'absolute',
     top: 60,
     right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
+    gap: 4,
   },
   skipText: {
     color: '#FFFFFF',

@@ -5,8 +5,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Import screens
+import OnboardingScreen from '../screens/OnboardingScreen'; 
 import SplashScreen from '../screens/SplashScreen';
-import OnboardingScreen from '../screens/OnboardingScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
@@ -50,12 +50,9 @@ const TabNavigator = () => {
 
           return <Icon name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#0B2C2D',
+        tabBarActiveTintColor: '#2563EB',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-        },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -69,11 +66,11 @@ const TabNavigator = () => {
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
+      <Stack.Navigator 
         initialRouteName="Onboarding" 
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#0B2C2D',
+            backgroundColor: '#2563EB',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -81,28 +78,22 @@ const AppNavigator = () => {
           },
         }}
       >
-        {/* ONBOARDING SCREEN  */}
+        {/* Add OnboardingScreen as the first screen */}
         <Stack.Screen
           name="Onboarding"
           component={OnboardingScreen}
           options={{ headerShown: false }}
         />
-
-        {/* SPLASH SCREEN */}
         <Stack.Screen
           name="Splash"
           component={SplashScreen}
           options={{ headerShown: false }}
         />
-
-        {/* MAIN APP */}
         <Stack.Screen
           name="MainTabs"
           component={TabNavigator}
           options={{ headerShown: false }}
         />
-
-
         <Stack.Screen
           name="VehicleDetails"
           component={VehicleDetailsScreen}
