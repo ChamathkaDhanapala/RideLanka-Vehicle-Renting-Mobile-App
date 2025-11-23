@@ -8,7 +8,7 @@ import {
   Linking,
   Platform,
 } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../constants/colors';
 
 const DEFAULT_VEHICLE = {
@@ -24,7 +24,7 @@ const DEFAULT_VEHICLE = {
   notes: 'Please call 15 minutes before arrival. Parking available in front of the building.',
 };
 
-const ContactScreen = ({ navigation, route }) => {
+const ContactScreen = ({ route }) => {
   const vehicle = {
     ...DEFAULT_VEHICLE,
     ...(route?.params?.vehicle || {}),
@@ -43,6 +43,7 @@ const ContactScreen = ({ navigation, route }) => {
   const handleOpenMaps = () => {
     const { latitude, longitude } = vehicle.coordinates;
     
+  
     const scheme = Platform.select({
       ios: 'http://maps.apple.com/?',
       android: 'geo:',
@@ -79,28 +80,15 @@ const ContactScreen = ({ navigation, route }) => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header with Back Button and Notification Icon */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={20} color={COLORS.black} />
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>Contact Owner</Text>
-        <TouchableOpacity
-          style={styles.notificationButton}
-          onPress={() => navigation.navigate('Notifications')}
-        >
-          <Ionicons name="notifications-outline" size={20} color={COLORS.hero} />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Owner Information</Text>
         
         <View style={styles.infoRow}>
-          <MaterialIcons name="person" size={20} color={COLORS.primary} />
+          <Icon name="person" size={20} color={COLORS.primary} />
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Owner Name</Text>
             <Text style={styles.infoValue}>{vehicle.owner}</Text>
@@ -108,7 +96,7 @@ const ContactScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.infoRow}>
-          <MaterialIcons name="phone" size={20} color={COLORS.primary} />
+          <Icon name="phone" size={20} color={COLORS.primary} />
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Phone Number</Text>
             <Text style={styles.infoValue}>{vehicle.phone}</Text>
@@ -116,7 +104,7 @@ const ContactScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.infoRow}>
-          <MaterialIcons name="location-on" size={20} color={COLORS.primary} />
+          <Icon name="location-on" size={20} color={COLORS.primary} />
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Pickup Location</Text>
             <Text style={styles.infoValue}>{vehicle.location}</Text>
@@ -130,7 +118,7 @@ const ContactScreen = ({ navigation, route }) => {
         <Text style={styles.cardTitle}>Pickup Location</Text>
         
         <View style={styles.locationCard}>
-          <MaterialIcons name="place" size={40} color={COLORS.primary} />
+          <Icon name="place" size={40} color={COLORS.primary} />
           <View style={styles.locationInfo}>
             <Text style={styles.locationTitle}>{vehicle.location}</Text>
             <Text style={styles.locationAddress}>{vehicle.address}</Text>
@@ -142,12 +130,12 @@ const ContactScreen = ({ navigation, route }) => {
 
         <View style={styles.locationButtons}>
           <TouchableOpacity style={styles.directionsButton} onPress={handleOpenMaps}>
-            <MaterialIcons name="directions" size={20} color={COLORS.white} />
+            <Icon name="directions" size={20} color={COLORS.white} />
             <Text style={styles.directionsButtonText}>Get Directions</Text>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.viewMapButton} onPress={handleViewOnMap}>
-            <MaterialIcons name="map" size={20} color={COLORS.primary} />
+            <Icon name="map" size={20} color={COLORS.primary} />
             <Text style={styles.viewMapButtonText}>View on Map</Text>
           </TouchableOpacity>
         </View>
@@ -158,7 +146,7 @@ const ContactScreen = ({ navigation, route }) => {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Owner Notes</Text>
           <View style={styles.notesContainer}>
-            <MaterialIcons name="notes" size={20} color={COLORS.primary} style={styles.notesIcon} />
+            <Icon name="notes" size={20} color={COLORS.primary} style={styles.notesIcon} />
             <Text style={styles.notesText}>{vehicle.notes}</Text>
           </View>
         </View>
@@ -166,7 +154,7 @@ const ContactScreen = ({ navigation, route }) => {
 
       {/* Important Note */}
       <View style={styles.noteCard}>
-        <MaterialIcons name="info" size={20} color={COLORS.warning} />
+        <Icon name="info" size={20} color={COLORS.warning} />
         <Text style={styles.noteText}>
           Call owner before arrival for exact location.
         </Text>
@@ -175,12 +163,12 @@ const ContactScreen = ({ navigation, route }) => {
       {/* Action Buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.callButton} onPress={handleCall}>
-          <MaterialIcons name="call" size={24} color={COLORS.white} />
+          <Icon name="call" size={24} color={COLORS.white} />
           <Text style={styles.buttonText}>Call Owner</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsApp}>
-          <MaterialIcons name="chat" size={24} color={COLORS.white} />
+          <Icon name="chat" size={24} color={COLORS.white} />
           <Text style={styles.buttonText}>WhatsApp</Text>
         </TouchableOpacity>
       </View>
@@ -189,19 +177,19 @@ const ContactScreen = ({ navigation, route }) => {
       <View style={styles.safetyCard}>
         <Text style={styles.safetyTitle}>Safety Tips</Text>
         <View style={styles.tipItem}>
-          <MaterialIcons name="check-circle" size={16} color={COLORS.success} />
+          <Icon name="check-circle" size={16} color={COLORS.success} />
           <Text style={styles.tipText}>Meet in a public place</Text>
         </View>
         <View style={styles.tipItem}>
-          <MaterialIcons name="check-circle" size={16} color={COLORS.success} />
+          <Icon name="check-circle" size={16} color={COLORS.success} />
           <Text style={styles.tipText}>Verify vehicle documents</Text>
         </View>
         <View style={styles.tipItem}>
-          <MaterialIcons name="check-circle" size={16} color={COLORS.success} />
+          <Icon name="check-circle" size={16} color={COLORS.success} />
           <Text style={styles.tipText}>Inspect vehicle thoroughly</Text>
         </View>
         <View style={styles.tipItem}>
-          <MaterialIcons name="check-circle" size={16} color={COLORS.success} />
+          <Icon name="check-circle" size={16} color={COLORS.success} />
           <Text style={styles.tipText}>Share your location with friends/family</Text>
         </View>
       </View>
@@ -218,43 +206,11 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     marginBottom: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: COLORS.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#0F3D3E',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
     color: COLORS.black,
-    textAlign: 'center',
-    flex: 1,
-    marginHorizontal: 12,
-  },
-  notificationButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: COLORS.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#0F3D3E',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
   },
   card: {
     backgroundColor: COLORS.white,
