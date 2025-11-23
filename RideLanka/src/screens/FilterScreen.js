@@ -140,6 +140,7 @@ const FilterScreen = ({ navigation }) => {
     </TouchableOpacity>
   );
 
+  // Price range slider component
   const PriceRangeSlider = () => {
     const min = 0;
     const max = 10000;
@@ -345,7 +346,7 @@ const FilterScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Price Range */}
+        {/* Price Range*/}
         <Text style={styles.sectionLabel}>Price Range (LKR/day) :</Text>
         <View style={styles.priceSection}>
           <PriceRangeSlider />

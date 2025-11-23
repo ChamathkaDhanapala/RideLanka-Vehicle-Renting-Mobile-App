@@ -153,6 +153,7 @@ const HomeScreen = ({ navigation }) => {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Categories</Text>
           </View>
+          {/* Categories Grid */}
           <View style={styles.categoryGrid}>
             {categories.slice(0, 4).map(renderCategory)}
           </View>
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     alignItems: 'center',
-    width: '23%', 
+    width: '23%', // 4 items per row with some spacing
   },
   categoryIcon: {
     width: 64,
@@ -323,7 +324,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   emptyCategory: {
-    width: '23%', 
+    width: '23%', // Empty space to maintain grid alignment
   },
   vehicleCard: {
     backgroundColor: COLORS.white,
