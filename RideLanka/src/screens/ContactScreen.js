@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
+  StatusBar,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 
 const DEFAULT_VEHICLE = {
@@ -24,7 +25,7 @@ const DEFAULT_VEHICLE = {
   notes: 'Please call 15 minutes before arrival. Parking available in front of the building.',
 };
 
-const ContactScreen = ({ route }) => {
+const ContactScreen = ({ navigation, route }) => {
   const vehicle = {
     ...DEFAULT_VEHICLE,
     ...(route?.params?.vehicle || {}),
@@ -43,25 +44,12 @@ const ContactScreen = ({ route }) => {
   const handleOpenMaps = () => {
     const { latitude, longitude } = vehicle.coordinates;
     
-  
-    const scheme = Platform.select({
-      ios: 'http://maps.apple.com/?',
-      android: 'geo:',
-    });
-    
-    const latLng = `${latitude},${longitude}`;
-    const label = vehicle.location;
-    
     if (Platform.OS === 'ios') {
-      // Apple Maps
-      Linking.openURL(`http://maps.apple.com/?daddr=${latLng}&dirflg=d`);
+      Linking.openURL(`http://maps.apple.com/?daddr=${latitude},${longitude}&dirflg=d`);
     } else {
-      // Android 
-      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latLng}&travelmode=driving`;
-      const geoUrl = `geo:${latLng}?q=${latLng}(${encodeURIComponent(label)})`;
-      
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
       Linking.openURL(googleMapsUrl).catch(() => {
-        Linking.openURL(geoUrl);
+        Linking.openURL(`geo:${latitude},${longitude}`);
       });
     }
   };
@@ -70,130 +58,155 @@ const ContactScreen = ({ route }) => {
     const { latitude, longitude } = vehicle.coordinates;
     
     if (Platform.OS === 'ios') {
-      // Apple Maps
       Linking.openURL(`http://maps.apple.com/?ll=${latitude},${longitude}&q=${encodeURIComponent(vehicle.location)}`);
     } else {
-      // Android - Google Maps
       Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`);
     }
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+      
+      {/* Header */}
       <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.headerIcon}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back" size={20} color={COLORS.black} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Contact Owner</Text>
+        <TouchableOpacity
+          style={styles.headerIcon}
+          onPress={() => navigation.navigate('Notifications')}
+        >
+          <Ionicons name="notifications-outline" size={20} color={COLORS.black} />
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Owner Information</Text>
-        
-        <View style={styles.infoRow}>
-          <Icon name="person" size={20} color={COLORS.primary} />
-          <View style={styles.infoContent}>
-            <Text style={styles.infoLabel}>Owner Name</Text>
-            <Text style={styles.infoValue}>{vehicle.owner}</Text>
-          </View>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Icon name="phone" size={20} color={COLORS.primary} />
-          <View style={styles.infoContent}>
-            <Text style={styles.infoLabel}>Phone Number</Text>
-            <Text style={styles.infoValue}>{vehicle.phone}</Text>
-          </View>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Icon name="location-on" size={20} color={COLORS.primary} />
-          <View style={styles.infoContent}>
-            <Text style={styles.infoLabel}>Pickup Location</Text>
-            <Text style={styles.infoValue}>{vehicle.location}</Text>
-            <Text style={styles.addressText}>{vehicle.address}</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Location Card */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Pickup Location</Text>
-        
-        <View style={styles.locationCard}>
-          <Icon name="place" size={40} color={COLORS.primary} />
-          <View style={styles.locationInfo}>
-            <Text style={styles.locationTitle}>{vehicle.location}</Text>
-            <Text style={styles.locationAddress}>{vehicle.address}</Text>
-            <Text style={styles.coordinates}>
-              Coordinates: {vehicle.coordinates.latitude.toFixed(4)}, {vehicle.coordinates.longitude.toFixed(4)}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.locationButtons}>
-          <TouchableOpacity style={styles.directionsButton} onPress={handleOpenMaps}>
-            <Icon name="directions" size={20} color={COLORS.white} />
-            <Text style={styles.directionsButtonText}>Get Directions</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.viewMapButton} onPress={handleViewOnMap}>
-            <Icon name="map" size={20} color={COLORS.primary} />
-            <Text style={styles.viewMapButtonText}>View on Map</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Owner Notes */}
-      {vehicle.notes && (
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        {/* Owner Information Card */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Owner Notes</Text>
-          <View style={styles.notesContainer}>
-            <Icon name="notes" size={20} color={COLORS.primary} style={styles.notesIcon} />
-            <Text style={styles.notesText}>{vehicle.notes}</Text>
+          <Text style={styles.cardTitle}>Owner Information</Text>
+          
+          <View style={styles.infoRow}>
+            <View style={styles.iconContainer}>
+              <MaterialIcons name="person" size={20} color={COLORS.primary} />
+            </View>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Owner Name</Text>
+              <Text style={styles.infoValue}>{vehicle.owner}</Text>
+            </View>
+          </View>
+
+          <View style={styles.infoRow}>
+            <View style={styles.iconContainer}>
+              <MaterialIcons name="phone" size={20} color={COLORS.primary} />
+            </View>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Phone Number</Text>
+              <Text style={styles.infoValue}>{vehicle.phone}</Text>
+            </View>
+          </View>
+
+          <View style={styles.infoRow}>
+            <View style={styles.iconContainer}>
+              <MaterialIcons name="location-on" size={20} color={COLORS.primary} />
+            </View>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Pickup Location</Text>
+              <Text style={styles.infoValue}>{vehicle.location}</Text>
+              <Text style={styles.addressText}>{vehicle.address}</Text>
+            </View>
           </View>
         </View>
-      )}
 
-      {/* Important Note */}
-      <View style={styles.noteCard}>
-        <Icon name="info" size={20} color={COLORS.warning} />
-        <Text style={styles.noteText}>
-          Call owner before arrival for exact location.
-        </Text>
-      </View>
+        {/* Location Card */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Pickup Location</Text>
+          
+          <View style={styles.locationCard}>
+            <View style={styles.locationIcon}>
+              <MaterialIcons name="place" size={32} color={COLORS.primary} />
+            </View>
+            <View style={styles.locationInfo}>
+              <Text style={styles.locationTitle}>{vehicle.location}</Text>
+              <Text style={styles.locationAddress}>{vehicle.address}</Text>
+            </View>
+          </View>
 
-      {/* Action Buttons */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.callButton} onPress={handleCall}>
-          <Icon name="call" size={24} color={COLORS.white} />
-          <Text style={styles.buttonText}>Call Owner</Text>
-        </TouchableOpacity>
+          <View style={styles.locationButtons}>
+            <TouchableOpacity style={styles.directionsButton} onPress={handleOpenMaps}>
+              <MaterialIcons name="directions" size={20} color={COLORS.white} />
+              <Text style={styles.directionsButtonText}>Get Directions</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.viewMapButton} onPress={handleViewOnMap}>
+              <MaterialIcons name="map" size={20} color={COLORS.primary} />
+              <Text style={styles.viewMapButtonText}>View on Map</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
-        <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsApp}>
-          <Icon name="chat" size={24} color={COLORS.white} />
-          <Text style={styles.buttonText}>WhatsApp</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Owner Notes */}
+        {vehicle.notes && (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Owner Notes</Text>
+            <View style={styles.notesContainer}>
+              <View style={styles.notesIcon}>
+                <MaterialIcons name="notes" size={20} color={COLORS.primary} />
+              </View>
+              <Text style={styles.notesText}>{vehicle.notes}</Text>
+            </View>
+          </View>
+        )}
 
-      {/* Safety Tips */}
-      <View style={styles.safetyCard}>
-        <Text style={styles.safetyTitle}>Safety Tips</Text>
-        <View style={styles.tipItem}>
-          <Icon name="check-circle" size={16} color={COLORS.success} />
-          <Text style={styles.tipText}>Meet in a public place</Text>
+        {/* Important Note */}
+        <View style={styles.noteCard}>
+          <MaterialIcons name="info" size={20} color={COLORS.warning} />
+          <Text style={styles.noteText}>
+            Call owner before arrival for exact location.
+          </Text>
         </View>
-        <View style={styles.tipItem}>
-          <Icon name="check-circle" size={16} color={COLORS.success} />
-          <Text style={styles.tipText}>Verify vehicle documents</Text>
+
+        {/* Action Buttons */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.callButton} onPress={handleCall}>
+            <MaterialIcons name="call" size={24} color={COLORS.white} />
+            <Text style={styles.buttonText}>Call Owner</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsApp}>
+            <MaterialIcons name="chat" size={24} color={COLORS.white} />
+            <Text style={styles.buttonText}>WhatsApp</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.tipItem}>
-          <Icon name="check-circle" size={16} color={COLORS.success} />
-          <Text style={styles.tipText}>Inspect vehicle thoroughly</Text>
+
+        {/* Safety Tips */}
+        <View style={styles.safetyCard}>
+          <Text style={styles.safetyTitle}>Safety Tips</Text>
+          <View style={styles.tipsContainer}>
+            <View style={styles.tipItem}>
+              <MaterialIcons name="check-circle" size={16} color={COLORS.success} />
+              <Text style={styles.tipText}>Meet in a public place</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <MaterialIcons name="check-circle" size={16} color={COLORS.success} />
+              <Text style={styles.tipText}>Verify vehicle documents</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <MaterialIcons name="check-circle" size={16} color={COLORS.success} />
+              <Text style={styles.tipText}>Inspect vehicle thoroughly</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <MaterialIcons name="check-circle" size={16} color={COLORS.success} />
+              <Text style={styles.tipText}>Share your location with friends/family</Text>
+            </View>
+          </View>
         </View>
-        <View style={styles.tipItem}>
-          <Icon name="check-circle" size={16} color={COLORS.success} />
-          <Text style={styles.tipText}>Share your location with friends/family</Text>
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -201,32 +214,51 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: 50,
+  },
+  scrollContent: {
+    paddingBottom: 40,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
-    marginBottom: 20,
+    paddingVertical: 16,
+    backgroundColor: COLORS.background,
+  },
+  headerIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: '700',
     color: COLORS.black,
   },
   card: {
     backgroundColor: COLORS.white,
     marginHorizontal: 20,
     padding: 20,
-    borderRadius: 16,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    borderRadius: 20,
+    marginBottom: 16,
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
   },
   cardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: '700',
     color: COLORS.black,
     marginBottom: 20,
   },
@@ -234,7 +266,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: 20,
-    gap: 15,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
   infoContent: {
     flex: 1,
@@ -243,10 +283,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.gray,
     marginBottom: 4,
+    fontWeight: '500',
   },
   infoValue: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     color: COLORS.black,
   },
   addressText: {
@@ -254,59 +295,60 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
     marginTop: 2,
   },
-  // Location Styles
   locationCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
+    backgroundColor: COLORS.background,
     padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  locationIcon: {
+    width: 48,
+    height: 48,
     borderRadius: 12,
-    marginBottom: 15,
-    gap: 15,
+    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
   locationInfo: {
     flex: 1,
   },
   locationTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '600',
     color: COLORS.black,
     marginBottom: 4,
   },
   locationAddress: {
     fontSize: 14,
     color: COLORS.gray,
-    marginBottom: 4,
-  },
-  coordinates: {
-    fontSize: 12,
-    color: COLORS.gray,
-    fontFamily: 'monospace',
   },
   locationButtons: {
-    gap: 10,
+    gap: 12,
   },
   directionsButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
-    padding: 15,
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 12,
     gap: 8,
   },
   directionsButtonText: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   viewMapButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.white,
-    padding: 15,
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: COLORS.primary,
     gap: 8,
@@ -314,16 +356,20 @@ const styles = StyleSheet.create({
   viewMapButtonText: {
     color: COLORS.primary,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
-  // Notes Styles
   notesContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
   },
   notesIcon: {
-    marginTop: 2,
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
   notesText: {
     flex: 1,
@@ -337,8 +383,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF3CD',
     marginHorizontal: 20,
     padding: 16,
-    borderRadius: 12,
-    marginBottom: 20,
+    borderRadius: 16,
+    marginBottom: 16,
     gap: 12,
   },
   noteText: {
@@ -351,7 +397,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     marginHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   callButton: {
     flex: 1,
@@ -360,8 +406,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     gap: 8,
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   whatsappButton: {
     flex: 1,
@@ -370,32 +421,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#25D366',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     gap: 8,
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonText: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   safetyCard: {
     backgroundColor: COLORS.white,
     marginHorizontal: 20,
     padding: 20,
-    borderRadius: 16,
-    marginBottom: 30,
+    borderRadius: 20,
+    marginBottom: 20,
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
   },
   safetyTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: COLORS.black,
-    marginBottom: 15,
+    marginBottom: 16,
+  },
+  tipsContainer: {
+    gap: 12,
   },
   tipItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
-    gap: 10,
+    gap: 12,
   },
   tipText: {
     fontSize: 14,

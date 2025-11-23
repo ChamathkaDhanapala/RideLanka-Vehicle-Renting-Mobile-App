@@ -30,26 +30,29 @@ const ProfileScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.headerIcon}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back" size={20} color={COLORS.black} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Your Profile</Text>
+        <TouchableOpacity
+          style={styles.headerIcon}
+          onPress={() => navigation.navigate('Notifications')}
+        >
+          <Ionicons name="notifications-outline" size={20} color={COLORS.black} />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.headerIcon}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="chevron-back" size={20} color={COLORS.black} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Your Profile</Text>
-          <TouchableOpacity
-            style={styles.headerIcon}
-            onPress={() => navigation.navigate('Notifications')}
-          >
-            <Ionicons name="notifications-outline" size={20} color={COLORS.black} />
-          </TouchableOpacity>
-        </View>
-
+        {/* Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.avatarWrapper}>
             <Image source={{ uri: userInfo.avatar }} style={styles.avatar} />
@@ -75,7 +78,7 @@ const ProfileScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Become an Owner  */}
+        {/* Become an Owner Section - Only show if user is NOT an owner */}
         {!userInfo.isOwner && (
           <View style={styles.becomeOwnerSection}>
             <Text style={styles.sectionTitle}>Become a Vehicle Owner</Text>
@@ -116,7 +119,7 @@ const ProfileScreen = ({ navigation }) => {
           </View>
         )}
 
-        {/* Owner Dashboard */}
+        {/* Owner Dashboard - Only show if user IS an owner */}
         {userInfo.isOwner && (
           <View style={styles.ownerSection}>
             <Text style={styles.sectionTitle}>Owner Dashboard</Text>
@@ -152,18 +155,32 @@ const ProfileScreen = ({ navigation }) => {
           </View>
         )}
 
+        {/* Personal Information */}
         <View style={styles.infoContainer}>
-          {infoRows.map((row) => (
-            <View key={row.label} style={styles.infoRow}>
-              <Text style={styles.infoLabel}>{row.label} :</Text>
+          <Text style={styles.infoSectionTitle}>Personal Information</Text>
+          {infoRows.map((row, index) => (
+            <View key={row.label} style={[
+              styles.infoRow,
+              index === infoRows.length - 1 && styles.lastInfoRow
+            ]}>
+              <Text style={styles.infoLabel}>{row.label}</Text>
               <Text style={styles.infoValue}>{row.value}</Text>
             </View>
           ))}
         </View>
 
-        <TouchableOpacity style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+        {/* Action Buttons */}
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity style={styles.editButton}>
+            <MaterialIcons name="edit" size={18} color={COLORS.primary} />
+            <Text style={styles.editButtonText}>Edit Profile</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.logoutButton}>
+            <MaterialIcons name="logout" size={18} color={COLORS.error} />
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -173,7 +190,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: 50,
   },
   scrollContent: {
     paddingBottom: 40,
@@ -183,7 +199,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    marginBottom: 16,
+    paddingVertical: 16,
+    backgroundColor: COLORS.background,
   },
   headerIcon: {
     width: 40,
@@ -334,51 +351,92 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.gray,
   },
-  
   infoContainer: {
     backgroundColor: COLORS.white,
     marginHorizontal: 20,
     borderRadius: 20,
     padding: 24,
-    gap: 18,
+    marginBottom: 20,
     shadowColor: '#0F3D3E',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.08,
     shadowRadius: 10,
     elevation: 4,
   },
+  infoSectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.black,
+    marginBottom: 16,
+  },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.background,
+  },
+  lastInfoRow: {
+    borderBottomWidth: 0,
   },
   infoLabel: {
     fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.black,
+    fontWeight: '600',
+    color: COLORS.gray,
   },
   infoValue: {
     fontSize: 16,
     color: COLORS.black,
+    fontWeight: '500',
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginHorizontal: 20,
+  },
+  editButton: {
     flex: 1,
-    textAlign: 'right',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.white,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    gap: 8,
+    shadowColor: '#0F3D3E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  editButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.primary,
   },
   logoutButton: {
-    marginTop: 32,
-    alignSelf: 'center',
-    backgroundColor: COLORS.hero,
-    paddingHorizontal: 40,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.white,
     paddingVertical: 14,
-    borderRadius: 24,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    gap: 8,
     shadowColor: '#0F3D3E',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
     elevation: 4,
   },
   logoutText: {
-    color: COLORS.white,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '600',
+    color: COLORS.error,
   },
 });
 
