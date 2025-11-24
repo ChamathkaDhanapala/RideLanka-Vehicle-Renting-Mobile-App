@@ -88,3 +88,17 @@ npx expo start
 4. **Start the development server**
 - Scan QR code with Expo Go app (Android/iOS)
 - Or press 'a' for Android emulator / 'i' for iOS simulator
+
+
+---
+
+# 🏍️ Live Demo
+
+[📱 Download APK](https://expo.dev/artifacts/eas/5FE9LWyDWKQYqkj2zmQ1cg.apk)
+
+### 📋 Installation Instructions:
+1. **Download** the APK to your Android device
+2. **Open** the APK file and install
+3. **Launch** the RideLanka app and explore!
+
+...
